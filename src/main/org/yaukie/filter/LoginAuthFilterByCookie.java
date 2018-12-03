@@ -1,13 +1,11 @@
 package org.yaukie.filter;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -26,7 +24,6 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.springframework.util.StringUtils;
@@ -42,6 +39,8 @@ public class LoginAuthFilterByCookie implements Filter {
 
 	private static final String V6_LOGIN_URL = "http://10.10.250.248/v6/jsp/login/login.jsp";
 	private static final String V6_USER_URL= "http://10.10.250.248/v6/restful/GetUserInfo/getUserInfoJson";
+	private static final String V6_KEEP_SESSION="http://10.10.250.248/v6/jsp/bsp/keepSession.jsp";
+	private static final String V6_HASPERMISSION_URL="http://10.10.250.248/dsp/restful/HasPermission/ifHasPermission";
 	
 	private static final Log log = LogFactory.getLog(LoginAuthFilterByCookie.class);
  
@@ -81,7 +80,6 @@ public class LoginAuthFilterByCookie implements Filter {
 		{
 			for (Cookie ck : cookies)
 			{
-				log.debug("获取到的所有跨域cookie：["+ck.getName()+":"+ck.getValue()+"]");
 				if (ck.getName().equals("sso_token"))
 				{
 					ssoTicket = ck.getValue();
@@ -110,14 +108,12 @@ public class LoginAuthFilterByCookie implements Filter {
 				if(info!=null){
 					//直接请求第三方应用
 					chain.doFilter(httpRequest, httpResponse);
-					return ;
 				}
 			}
 
 	        try {
  
 	        	JSONObject json  =getJson(httpRequest,ssoTicket);
-	        	log.debug("执行到此地方22222222222["+json+"]");
 	            /*判断该用户信息是否正常(一般为过期,获取退出)*/
 	            if(json.containsKey("exception")){
 	            	httpRequest.getSession().removeAttribute("userInfo");
@@ -133,6 +129,16 @@ public class LoginAuthFilterByCookie implements Filter {
 	            	httpRequest.getSession().setAttribute("sso_token", ssoTicket);
 	            	httpRequest.getSession().setAttribute("userInfo", json);
 	            	httpRequest.getSession().setAttribute("user_name", json.get("user_name"));
+	            	//增加会话保持
+	            	keepSession(ssoTicket);
+	            	//判断该用户请求的地址是否具有访问权限,
+	            	boolean flag = this.ifHasPermission(ssoTicket, user_id);
+	            	if(flag){
+	            		chain.doFilter(request, response);
+	            	}else
+	            	{
+	            		return ;
+	            	}
 	            }
 			} catch (Exception exp) {
 				if(log.isErrorEnabled()){
@@ -162,6 +168,12 @@ public class LoginAuthFilterByCookie implements Filter {
 		return null;
 	}
 	
+	/**
+	 * 请求调用过程
+	 * @param httpRequest
+	 * @param userCookieString
+	 * @return
+	 */
 	private JSONObject getJson (HttpServletRequest httpRequest ,String userCookieString){
 		if (log.isDebugEnabled()) {
 			log.debug("开始验证用户信息restfulUrl]{url=" + V6_USER_URL);
@@ -176,7 +188,9 @@ public class LoginAuthFilterByCookie implements Filter {
 		try {
 			httpResponse = httpClient.execute(httpPost, HttpClientContext.create());
 		    response = EntityUtils.toString(httpResponse.getEntity(), "utf-8");
-	        json = JSONObject.parseObject(response.replaceAll("\\\\\"", "'").substring(1, response.replaceAll("\\\\\"", "'").length() - 1));
+		    response=response.replaceAll("\\\\\"", "'");
+		    response=response.substring(1, response.replaceAll("\\\\\"", "'").length() - 1);
+	        json = JSONObject.parseObject(response);
 		} catch (ClientProtocolException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -184,6 +198,73 @@ public class LoginAuthFilterByCookie implements Filter {
 		}
       
            return json;
+	}
+	
+	
+	/**
+	 * 会话保持远程操作
+	 * @param userCookieString
+	 */
+	private void keepSession(String userCookieString){
+		String response = 0+"";
+		try {
+			 RequestConfig requestConfig = RequestConfig.custom().setCookieSpec(CookieSpecs.IGNORE_COOKIES).build();
+			 CloseableHttpClient httpClient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();
+			  HttpPost httpPost = new HttpPost(V6_KEEP_SESSION);
+			  httpPost.setHeader("Cookie", "JSESSIONID=" + userCookieString + ";Path=/v6;Domain="+httpRequest.getRemoteAddr());
+		      HttpResponse httpResponse = httpClient.execute(httpPost, HttpClientContext.create());
+			if (httpResponse.getStatusLine().getStatusCode()==200) {
+				String callBackString = httpResponse.getEntity().toString();
+				log.debug("请求返回结果为:" + callBackString);
+ 
+			} else {
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 判断用户请求的某个url是否有权限
+	 * @param userCookieString
+	 * @param userId
+	 * @return
+	 */
+	private boolean ifHasPermission(String userCookieString,String userId){
+		boolean flag = false;
+		JSONObject json=null;
+		String requestUrl = httpRequest.getRequestURI();
+		if(log.isDebugEnabled()){
+			log.debug("框架拦截到的用户{"+userId+"}试图请求的URL为:[ "+requestUrl+" ]");
+		}
+		try {
+			RestfulHttpClient.HttpResponse response = RestfulHttpClient.getClient(V6_HASPERMISSION_URL)
+					.addHeader("Cookie", "JSESSIONID=" + userCookieString + ";Path=/v6;Domain="+httpRequest.getRemoteAddr())
+					.addQueryParam("userId", userId)
+					.addQueryParam("url", requestUrl)
+					.request();
+		     if (response.getCode() == 200) {
+		            //请求成功
+		    	 	if(log.isDebugEnabled()){
+		    	 		log.debug("权限判断调用结果为:"+response.getContent()+",最终发起的请求地址为:"+response.getRequestUrl());
+		    	 	}
+		    	  	String responseStr = response.getContent();
+		    	  	responseStr=responseStr.replaceAll("\\\\\"", "'");
+		    	  	responseStr=responseStr.substring(1, responseStr.replaceAll("\\\\\"", "'").length() - 1);
+					 json = JSONObject.parseObject(responseStr);
+					if(null !=json && json.containsKey("isHasPermission")){
+						String flagStr = json.get("isHasPermission").toString();
+						flag = Boolean.parseBoolean(flagStr);
+					}
+		        }
+		
+		} catch (IOException e) {
+			if(log.isErrorEnabled()){
+				log.error("权限判断请求失败,原因为:"+e);
+			}
+		}
+		return flag;
 	}
 
 }

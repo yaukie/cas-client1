@@ -50,11 +50,27 @@ version="3.1">
       <param-value>classpath:/resources/spring-webmvc-servlet.xml</param-value>
     </init-param>
   </servlet>
+  
+   
+ <!--  soap 配置 ,由于v6 servlet 不支持 3.0 所以,暂时使用web配置方式 -->
+ <servlet>
+ 	<servlet-name>soap</servlet-name>
+ 	<servlet-class>org.yaukie.servlet.PublishSoapServiceServlet</servlet-class>
+ 	<load-on-startup>1</load-on-startup>
+ </servlet>
+
 
   <servlet-mapping>
     <servlet-name>spring-webmvc</servlet-name>
-    <url-pattern>/</url-pattern>
+    <url-pattern>/*</url-pattern>
   </servlet-mapping>
+  
+  
+   <!-- 处理所有的rest类型的ws请求 -->
+ <servlet-mapping>
+ 	<servlet-name>soap</servlet-name>
+ 	<url-pattern>/soap/*</url-pattern>
+ </servlet-mapping>
   
   <!-- 防止tomcat内存溢出的监听 -->
    <listener>

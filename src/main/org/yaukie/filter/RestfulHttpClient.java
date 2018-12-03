@@ -12,10 +12,9 @@ import java.util.Map;
 import org.springframework.util.StringUtils;
 
 /**
- * <p>RestfulApi请求工具</p>
- * <a href="http://blog.csdn.net/lnktoking/article/details/79174187">使用说明</a>
+ * restful 请求调用接口
+ * @author yaukie
  *
- * @author lnk
  */
 public class RestfulHttpClient {
     /**
