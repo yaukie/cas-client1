@@ -3,12 +3,12 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>cas-client1</groupId>
-  <artifactId>cas-client1</artifactId>
+  <groupId>client1</groupId>
+  <artifactId>client1</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>war</packaging>
 
-  <name>cas-client1</name>
+  <name>client1</name>
   <description>Example using Brave to trace RPCs from Spring Web MVC</description>
 
   <properties>
@@ -23,6 +23,20 @@
       <artifactId>log4j</artifactId>
       <version>1.2.17</version>
     </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/net.java.dev.jna/jna -->
+<dependency>
+    <groupId>net.java.dev.jna</groupId>
+    <artifactId>jna</artifactId>
+    <version>5.0.0</version>
+</dependency>
+    <!-- https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform -->
+<dependency>
+    <groupId>net.java.dev.jna</groupId>
+    <artifactId>jna-platform</artifactId>
+    <version>5.0.0</version>
+</dependency>
+    
     
    <dependency>
       <groupId>org.springframework</groupId>
@@ -78,6 +92,13 @@
 		    <artifactId>classloader-leak-prevention-servlet</artifactId>
 		    <version>2.1.0</version>
 		</dependency>
+		   <!--简化javabean相关操作-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.18</version>
+            <scope>provided</scope>
+        </dependency>
  <!-- https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient -->
 <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
 <dependency>
@@ -112,7 +133,7 @@
  
     </dependencies>
   <build>
-  <finalName>casClient1</finalName>
+  <finalName>client1</finalName>
     <plugins>
  	<!-- tomcat -->
     	  <plugin>
@@ -126,7 +147,7 @@
  				    <password>admin</password>
  				    <port>8088</port>
  				    <update>true</update>
-      				<path>/casClient1</path>
+      				<path>/client1</path>
                     <charset>UTF-8</charset>
                     <encoding>UTF-8</encoding>
                     <uriEncoding>UTF-8</uriEncoding>

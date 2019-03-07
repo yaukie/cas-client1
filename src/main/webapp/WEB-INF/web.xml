@@ -4,7 +4,7 @@ xmlns="http://xmlns.jcp.org/xml/ns/javaee"
 xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" 
 version="3.1">
 
-  <display-name>casClient1</display-name>
+  <display-name>client1</display-name>
  
 <context-param>
       <param-name>contextConfigLocation</param-name>
@@ -14,7 +14,7 @@ version="3.1">
   <!-- 解决同一个web容器加载多个log4j异常问题-->
     <context-param>
    <param-name>webAppRootKey</param-name>
-   <param-value>casClient1.root</param-value>
+   <param-value>client1.root</param-value>
 </context-param>
   <!-- 解决spring内部加载报 NameNotFoundException 问题 start-->
 	<context-param>
@@ -30,16 +30,6 @@ version="3.1">
 		<param-value>dev</param-value>
 	</context-param>
   <!-- 解决spring内部加载报 NameNotFoundException 问题 end -->
-  
-  <!-- 基于cookie共享的单点登录 -->
-    <filter>
-  	<filter-name>LoginAuthFilter</filter-name>
-  	<filter-class>org.yaukie.filter.LoginAuthFilterByCookie</filter-class>
-  </filter>
-  <filter-mapping>
-  	<filter-name>LoginAuthFilter</filter-name>
-  	<url-pattern>/*</url-pattern>
-  </filter-mapping>
   
   
   <servlet>
@@ -103,7 +93,9 @@ version="3.1">
 <!--     <filter-class>brave.spring.webmvc.DelegatingTracingFilter</filter-class> -->
 <!--   </filter> -->
 <!--   <filter-mapping> -->
+
 <!--     <filter-name>localTracingFilter</filter-name> -->
+
 <!--     <url-pattern>/*</url-pattern> -->
 <!--   </filter-mapping> -->
   

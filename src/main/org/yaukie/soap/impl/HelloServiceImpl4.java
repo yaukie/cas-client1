@@ -12,7 +12,7 @@ public class HelloServiceImpl4 implements HelloService4 {
 
 	@Override
 	public void sayHello(String name) {
-		log.debug(name);
+		log.debug("AAAAAAAA=="+name);
 	}
 
 

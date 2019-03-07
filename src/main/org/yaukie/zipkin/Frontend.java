@@ -68,4 +68,14 @@ public class Frontend {
 	 request.getSession().setAttribute("casClient", context);
 	return "booking";
   }
+  
+  @RequestMapping("/noAuth")
+  public String noAuth(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	 if(log.isDebugEnabled()){
+		 log.debug("service Frontend starts ");
+	 }
+	 String context = request.getContextPath();
+	 request.getSession().setAttribute("casClient", context);
+	return "noAuth";
+  }
 }
