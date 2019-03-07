@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head -->
+<head>
+
+<title>提示页面</title>
+
+ <!-- Meta-Tags -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="">
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<!-- //Meta-Tags -->
+
+<!-- Custom-Stylesheet-Links -->
+<!-- Bootstrap-CSS --> 	<link rel="stylesheet" href="/client1/css/bootstrap.min.css"	type="text/css" media="all">
+<!-- Index-Page-CSS --> <link rel="stylesheet" href="/client1/css/style.css" 		type="text/css" media="all">
+<!-- Animate.CSS --> 	<link rel="stylesheet" href="/client1/css/animate.css" 		type="text/css" media="all">
+<!-- //Custom-Stylesheet-Links -->
+
+<!-- Fonts -->
+<!-- Body-Font -->	 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800" type="text/css">
+<!-- Logo-Font -->	 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Cinzel+Decorative:400,900,700" type="text/css">
+<!-- Navbar-Font --> <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Montserrat:400,700"			   type="text/css">
+<!-- //Fonts -->
+ 
+</head>
+<!-- //Head -->
+
+<!-- Body -->
+<body>
+
+
+<div class="header agileits w3layouts" id="home"  style="position: absolute;
+    margin: 0px auto auto 9%;">
+
+		<!-- Navbar -->
+		<nav class="navbar navbar-default agileits w3layouts inner-pages-navbar wow bounceInUp">
+			<div class="container">
+
+				<div class="navbar-header agileits w3layouts">
+					<button type="button" class="navbar-toggle agileits w3layouts collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+						<span class="sr-only agileits w3layouts">Toggle navigation</span>
+						<span class="icon-bar agileits w3layouts"></span>
+						<span class="icon-bar agileits w3layouts"></span>
+						<span class="icon-bar agileits w3layouts"></span>
+					</button>
+					<a class="navbar-brand agileits w3layouts" href="index">Tropical Resorts</a>
+				</div>
+
+				<div id="navbar" class="navbar-collapse agileits w3layouts navbar-right collapse">
+					<ul class="nav navbar-nav agileits w3layouts">
+		 			<li ><a href="index">HOME</a></li>
+						<li><a href="about">ABOUT</a></li>
+						<li><a href="cuisines">CUISINES</a></li>
+						<li><a href="gallery">GALLERY</a></li>
+						<li ><a href="codes">CODES</a></li>
+						<li  ><a href="booking">BOOKING</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</nav>
+		<!-- //Navbar -->
+
+
+		<!-- Banner -->
+		<div class="banner agileits w3layouts" style="    position: absolute;
+    margin: -30px auto auto auto;
+    width: 300px;">
+			<div style=" position: absolute;   width: 180px;   height: 25px; margin: 130px auto auto 200px;">
+			<h3>离跳转还有:<span id="totalSecond">5</span>秒</h3>
+			</div>
+			<img src="images/noAuth.jpg" style="width:1300px;height:750px;" >
+		</div>
+		<!-- //Banner -->
+
+	</div>
+ 
+			<!-- Default-JavaScript -->	  <script type="text/javascript" src="/client1/js/jquery-2.1.4.min.js"></script>
+			<script>
+			var second = $("#totalSecond").html(); 
+			setInterval("redirect()", 1000); 
+			function redirect(){ 
+				$("#totalSecond").html(--second); 
+			if(second<=0) location.href='http://10.10.250.248/portal/portal/commercegdindex.cmd?method=goHomePage'; 
+			} 
+			</script>
+
+</body>
+<!-- //Body -->
+
+
+
+</html>
